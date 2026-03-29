@@ -1,7 +1,9 @@
 # Microsoft.Extensions.AI Integration
 
-The Gretel SDK provides `AIFunction` tools that can be used with any `IChatClient` from the
-[Microsoft.Extensions.AI](https://www.nuget.org/packages/Microsoft.Extensions.AI.Abstractions) ecosystem.
+!!! tip "Cross-SDK comparison"
+    See the [centralized MEAI documentation](https://tryagi.github.io/docs/meai/) for feature matrices and comparisons across all tryAGI SDKs.
+
+The Gretel SDK provides `AIFunction` tool wrappers compatible with [Microsoft.Extensions.AI](https://learn.microsoft.com/en-us/dotnet/ai/microsoft-extensions-ai). These tools can be used with any `IChatClient` to give AI models access to Gretel's synthetic data generation project and model management.
 
 ## Available Tools
 
