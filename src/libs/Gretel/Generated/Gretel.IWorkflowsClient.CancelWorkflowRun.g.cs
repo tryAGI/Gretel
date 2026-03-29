@@ -1,0 +1,18 @@
+#nullable enable
+
+namespace Gretel
+{
+    public partial interface IWorkflowsClient
+    {
+        /// <summary>
+        /// Cancel workflow run<br/>
+        /// Cancel a running workflow.
+        /// </summary>
+        /// <param name="workflowRunId"></param>
+        /// <param name="cancellationToken">The token to cancel the operation with</param>
+        /// <exception cref="global::Gretel.ApiException"></exception>
+        global::System.Threading.Tasks.Task<global::Gretel.WorkflowRun> CancelWorkflowRunAsync(
+            string workflowRunId,
+            global::System.Threading.CancellationToken cancellationToken = default);
+    }
+}

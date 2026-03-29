@@ -1,0 +1,2437 @@
+openapi: 3.0.3
+info:
+  title: Gretel API
+  description: >
+    Gretel.ai REST API for privacy-preserving synthetic data generation, data classification,
+    and data transformation. These APIs allow you to ingest data to Gretel and explore the data
+    Gretel is able to extract.
+  version: "1.0.0"
+  contact:
+    name: Gretel.ai
+    url: https://gretel.ai
+
+servers:
+  - url: https://api.gretel.ai
+    description: Gretel API
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: projects
+    description: Manage projects, artifacts, models, and record handlers
+  - name: workflows
+    description: Create and manage data generation workflows
+  - name: connections
+    description: Manage data source and destination connections
+  - name: users
+    description: User management, billing, teams, and invites
+  - name: activity
+    description: Activity logs and search
+  - name: clusters
+    description: Compute cluster management
+  - name: logs
+    description: Log retrieval
+
+paths:
+  /projects:
+    get:
+      operationId: listProjects
+      summary: List projects
+      description: List all projects accessible to the authenticated user.
+      tags: [projects]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Maximum number of projects to return
+        - name: withMembers
+          in: query
+          schema:
+            type: boolean
+          description: Include project members in response
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectList"
+
+  /projects/:
+    post:
+      operationId: createProject
+      summary: Create project
+      description: Create a new Gretel project.
+      tags: [projects]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequest"
+      responses:
+        "200":
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+
+  /projects/{project_id}:
+    get:
+      operationId: getProject
+      summary: Get project
+      description: Get project details by ID or name.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project ID or name
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+    patch:
+      operationId: updateProject
+      summary: Update project
+      description: Update an existing project.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project ID or name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectRequest"
+      responses:
+        "200":
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+    delete:
+      operationId: deleteProject
+      summary: Delete project
+      description: Delete a project and all its resources.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Project ID or name
+        - name: dry_run
+          in: query
+          schema:
+            type: boolean
+          description: If true, simulate deletion without actually deleting
+      responses:
+        "200":
+          description: Project deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /projects/{project_id}/artifacts:
+    post:
+      operationId: createProjectArtifact
+      summary: Create project artifact
+      description: Upload an artifact to a project.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateArtifactRequest"
+      responses:
+        "200":
+          description: Artifact created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artifact"
+    get:
+      operationId: listProjectArtifacts
+      summary: List project artifacts
+      description: List all artifacts in a project.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArtifactList"
+    delete:
+      operationId: deleteProjectArtifact
+      summary: Delete project artifact
+      description: Delete a specific artifact from a project.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: key
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Artifact key to delete
+      responses:
+        "200":
+          description: Artifact deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /projects/{project_id}/artifacts/download:
+    get:
+      operationId: downloadProjectArtifact
+      summary: Download project artifact
+      description: Get a download URL for a project artifact.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: key
+          in: query
+          schema:
+            type: string
+          description: Artifact key to download
+      responses:
+        "200":
+          description: Download URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArtifactDownload"
+
+  /projects/{project_id}/models:
+    post:
+      operationId: createModel
+      summary: Create model
+      description: >
+        Create a new model in a project. Models define the synthetic data generation
+        configuration including the model type (CTGAN, LSTM, etc.) and parameters.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: runner_mode
+          in: query
+          schema:
+            type: string
+            enum: [manual, cloud, hybrid]
+          description: Runner mode for model training
+        - name: dry_run
+          in: query
+          schema:
+            type: string
+            enum: ["yes", "no"]
+          description: If yes, validate config without creating
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateModelRequest"
+      responses:
+        "200":
+          description: Model created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Model"
+    get:
+      operationId: listModels
+      summary: List models
+      description: List all models in a project.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Maximum number of models to return
+        - name: model_type
+          in: query
+          schema:
+            type: string
+          description: Filter by model type
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Sort order
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModelList"
+
+  /projects/{project_id}/models/{model_id}:
+    get:
+      operationId: getModel
+      summary: Get model
+      description: Get model details including status and configuration.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Model"
+    patch:
+      operationId: updateModel
+      summary: Update model
+      description: Update model status or configuration.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateModelRequest"
+      responses:
+        "200":
+          description: Model updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Model"
+    delete:
+      operationId: deleteModel
+      summary: Delete model
+      description: Delete a model from a project.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Model deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /projects/{project_id}/models/{model_id}/artifact:
+    get:
+      operationId: getModelArtifact
+      summary: Get model artifact
+      description: Download a model artifact such as the trained model or report.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [model, report, report_json, data, logs]
+          description: Type of artifact to download
+      responses:
+        "200":
+          description: Artifact download URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArtifactDownload"
+
+  /projects/{project_id}/models/{model_id}/record_handlers:
+    post:
+      operationId: createRecordHandler
+      summary: Create record handler
+      description: >
+        Create a record handler for a model to generate synthetic data records.
+        This starts the data generation process.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRecordHandlerRequest"
+      responses:
+        "200":
+          description: Record handler created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordHandler"
+    get:
+      operationId: listRecordHandlers
+      summary: List record handlers
+      description: List all record handlers for a model.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [created, pending, active, completed, error, cancelled]
+          description: Filter by handler status
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordHandlerList"
+
+  /projects/{project_id}/models/{model_id}/record_handlers/{handler_id}:
+    get:
+      operationId: getRecordHandler
+      summary: Get record handler
+      description: Get record handler details including status and artifacts.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: handler_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: expand
+          in: query
+          schema:
+            type: string
+          description: Expand related resources (e.g., artifacts)
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordHandler"
+    patch:
+      operationId: updateRecordHandler
+      summary: Update record handler
+      description: Update record handler status (e.g., cancel).
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: handler_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRecordHandlerRequest"
+      responses:
+        "200":
+          description: Record handler updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordHandler"
+    delete:
+      operationId: deleteRecordHandler
+      summary: Delete record handler
+      description: Delete a record handler.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: handler_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Record handler deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /projects/{project_id}/models/{model_id}/record_handlers/{handler_id}/artifact:
+    get:
+      operationId: getRecordHandlerArtifact
+      summary: Get record handler artifact
+      description: Download a record handler artifact such as generated data.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: handler_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [data, report, report_json, logs]
+          description: Type of artifact to download
+      responses:
+        "200":
+          description: Artifact download URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArtifactDownload"
+
+  /projects/{project_id}/members:
+    get:
+      operationId: listProjectMembers
+      summary: List project members
+      description: List all members of a project.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemberList"
+
+  /projects/{project_id}/invites:
+    post:
+      operationId: createProjectInvite
+      summary: Create or update project invite
+      description: Invite a user to a project or update an existing membership.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInviteRequest"
+      responses:
+        "200":
+          description: Invite created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invite"
+
+  /projects/{project_id}/members/{membership_id}:
+    delete:
+      operationId: deleteProjectMember
+      summary: Delete project membership
+      description: Remove a member or cancel an invite for a project.
+      tags: [projects]
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: membership_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Membership deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # Workflows
+  /v1/workflows:
+    get:
+      operationId: listWorkflows
+      summary: List workflows
+      description: List all workflows.
+      tags: [workflows]
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowList"
+    post:
+      operationId: createWorkflow
+      summary: Create workflow
+      description: Create a new workflow for automated data generation.
+      tags: [workflows]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWorkflowRequest"
+      responses:
+        "200":
+          description: Workflow created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+
+  /v1/workflows/search:
+    get:
+      operationId: searchWorkflows
+      summary: Search workflows
+      description: Search workflows with filters.
+      tags: [workflows]
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Search query
+        - name: sort
+          in: query
+          schema:
+            type: string
+          description: Sort field
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Maximum results
+        - name: skip
+          in: query
+          schema:
+            type: integer
+          description: Number of results to skip
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowList"
+
+  /v1/workflows/validate-action:
+    post:
+      operationId: validateWorkflowAction
+      summary: Validate workflow action
+      description: Validate a workflow action configuration.
+      tags: [workflows]
+      parameters:
+        - name: runner_mode
+          in: query
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationResult"
+
+  /v1/workflows/validate-config:
+    post:
+      operationId: validateWorkflowConfig
+      summary: Validate workflow config
+      description: Validate a complete workflow configuration.
+      tags: [workflows]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateWorkflowConfigRequest"
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationResult"
+
+  /v1/workflows/{workflow_id}:
+    get:
+      operationId: getWorkflow
+      summary: Get workflow
+      description: Get workflow details.
+      tags: [workflows]
+      parameters:
+        - name: workflow_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+    delete:
+      operationId: deleteWorkflow
+      summary: Delete workflow
+      description: Delete a workflow.
+      tags: [workflows]
+      parameters:
+        - name: workflow_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workflow deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /v1/workflows/{workflow_id}/config:
+    post:
+      operationId: updateWorkflowConfig
+      summary: Update workflow config
+      description: Update the configuration of a workflow.
+      tags: [workflows]
+      parameters:
+        - name: workflow_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Config updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workflow"
+
+  /v1/workflows/runs:
+    post:
+      operationId: createWorkflowRun
+      summary: Create workflow run
+      description: Start a new run of a workflow to generate synthetic data.
+      tags: [workflows]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWorkflowRunRequest"
+      responses:
+        "200":
+          description: Workflow run created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowRun"
+
+  /v1/workflows/runs/search:
+    get:
+      operationId: searchWorkflowRuns
+      summary: Search workflow runs
+      description: Search workflow runs with filters.
+      tags: [workflows]
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: skip
+          in: query
+          schema:
+            type: integer
+        - name: sort
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowRunList"
+
+  /v1/workflows/runs/{workflow_run_id}:
+    get:
+      operationId: getWorkflowRun
+      summary: Get workflow run
+      description: Get workflow run details including status.
+      tags: [workflows]
+      parameters:
+        - name: workflow_run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowRun"
+
+  /v1/workflows/runs/{workflow_run_id}/cancel:
+    patch:
+      operationId: cancelWorkflowRun
+      summary: Cancel workflow run
+      description: Cancel a running workflow.
+      tags: [workflows]
+      parameters:
+        - name: workflow_run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workflow run cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowRun"
+
+  /v1/workflows/runs/tasks/search:
+    get:
+      operationId: searchWorkflowTasks
+      summary: Search workflow tasks
+      description: Search workflow tasks with filters.
+      tags: [workflows]
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: skip
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowTaskList"
+
+  /v1/workflows/runs/tasks/{workflow_task_id}:
+    get:
+      operationId: getWorkflowTask
+      summary: Get workflow task
+      description: Get workflow task details.
+      tags: [workflows]
+      parameters:
+        - name: workflow_task_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowTask"
+
+  # Connections
+  /v1/connections:
+    get:
+      operationId: listConnections
+      summary: List connections
+      description: List all connections.
+      tags: [connections]
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionList"
+    post:
+      operationId: createConnection
+      summary: Create connection
+      description: Create a new data source or destination connection.
+      tags: [connections]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateConnectionRequest"
+      responses:
+        "200":
+          description: Connection created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+
+  /v1/connections/search:
+    get:
+      operationId: searchConnections
+      summary: Search connections
+      description: Search connections with filters.
+      tags: [connections]
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: skip
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionList"
+
+  /v1/connections/sample_connections:
+    get:
+      operationId: listSampleConnections
+      summary: List sample connections
+      description: List sample connection configurations.
+      tags: [connections]
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionList"
+
+  /v1/connections/{connection_id}:
+    get:
+      operationId: getConnection
+      summary: Get connection
+      description: Get connection details.
+      tags: [connections]
+      parameters:
+        - name: connection_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+    patch:
+      operationId: updateConnection
+      summary: Update connection
+      description: Update a connection.
+      tags: [connections]
+      parameters:
+        - name: connection_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateConnectionRequest"
+      responses:
+        "200":
+          description: Connection updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+    delete:
+      operationId: deleteConnection
+      summary: Delete connection
+      description: Delete a connection.
+      tags: [connections]
+      parameters:
+        - name: connection_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Connection deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /v1/connections/{connection_id}/credentials:
+    get:
+      operationId: getConnectionCredentials
+      summary: Get connection credentials
+      description: Get connection with decrypted credentials.
+      tags: [connections]
+      parameters:
+        - name: connection_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+
+  /v1/connections/{connection_id}/validate-credentials:
+    post:
+      operationId: validateConnectionCredentials
+      summary: Validate connection credentials
+      description: Test that connection credentials are valid.
+      tags: [connections]
+      parameters:
+        - name: connection_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationResult"
+
+  # Users
+  /users/me:
+    get:
+      operationId: getProfile
+      summary: Get your profile
+      description: Get the profile of the authenticated user.
+      tags: [users]
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    patch:
+      operationId: updateProfile
+      summary: Update your profile
+      description: Update the authenticated user's profile.
+      tags: [users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileRequest"
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    delete:
+      operationId: deleteAccount
+      summary: Delete your account
+      description: Delete the authenticated user's account.
+      tags: [users]
+      parameters:
+        - name: dry_run
+          in: query
+          schema:
+            type: string
+            enum: ["yes", "no"]
+      responses:
+        "200":
+          description: Account deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /users/me/key:
+    patch:
+      operationId: createApiKey
+      summary: Create API key
+      description: Create a new persistent API key for the authenticated user.
+      tags: [users]
+      responses:
+        "200":
+          description: API key created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyResponse"
+    delete:
+      operationId: revokeApiKey
+      summary: Revoke API key
+      description: Revoke the authenticated user's API key.
+      tags: [users]
+      responses:
+        "200":
+          description: API key revoked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /users/me/logout:
+    post:
+      operationId: logout
+      summary: Logout
+      description: Logout the authenticated user.
+      tags: [users]
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /users/me/invites:
+    get:
+      operationId: listInvites
+      summary: List invites
+      description: List pending invites for the authenticated user.
+      tags: [users]
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InviteList"
+
+  /users/me/invites/{invite_id}:
+    patch:
+      operationId: acceptInvite
+      summary: Accept invite
+      description: Accept a pending invite.
+      tags: [users]
+      parameters:
+        - name: invite_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Invite accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invite"
+    delete:
+      operationId: deleteInvite
+      summary: Delete invite
+      description: Delete or reject a pending invite.
+      tags: [users]
+      parameters:
+        - name: invite_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Invite deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /users/{user_id}:
+    get:
+      operationId: getUser
+      summary: Get user
+      description: Get a user's profile by ID.
+      tags: [users]
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/search:
+    post:
+      operationId: searchUsers
+      summary: Search users
+      description: Search for users by text.
+      tags: [users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchUsersRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserList"
+
+  /users/me/billing:
+    get:
+      operationId: getBilling
+      summary: Get billing data
+      description: Get billing information for the authenticated user.
+      tags: [users]
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillingData"
+
+  /users/me/billing/subscriptions:
+    post:
+      operationId: createSubscription
+      summary: Create or modify subscription
+      description: Create or modify a subscription plan.
+      tags: [users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubscriptionRequest"
+      responses:
+        "200":
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /users/me/team:
+    get:
+      operationId: getTeam
+      summary: Get my team
+      description: Get the team information for the authenticated user.
+      tags: [users]
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+
+  /users/team/invites/create:
+    post:
+      operationId: createTeamInvite
+      summary: Create team invite
+      description: Invite a user to your team.
+      tags: [users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamInviteRequest"
+      responses:
+        "200":
+          description: Team invite created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invite"
+
+  /users/team/invites/reject:
+    post:
+      operationId: rejectTeamInvite
+      summary: Reject team invite
+      description: Reject a team invite.
+      tags: [users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamInviteRequest"
+      responses:
+        "200":
+          description: Invite rejected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /users/team/remove_member:
+    post:
+      operationId: removeTeamMember
+      summary: Remove team member
+      description: Remove a member from your team.
+      tags: [users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamInviteRequest"
+      responses:
+        "200":
+          description: Member removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # Activity
+  /v1/activity:
+    get:
+      operationId: searchActivity
+      summary: Search activity
+      description: Search activity logs with filters.
+      tags: [activity]
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Search query string
+        - name: sort
+          in: query
+          schema:
+            type: string
+          description: Sort field
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Maximum results
+        - name: skip
+          in: query
+          schema:
+            type: integer
+          description: Number to skip
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityList"
+
+  # Clusters
+  /v1/clusters:
+    get:
+      operationId: listClusters
+      summary: List clusters
+      description: List available compute clusters.
+      tags: [clusters]
+      parameters:
+        - name: owned_only
+          in: query
+          schema:
+            type: boolean
+          description: Only return clusters owned by the user
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClusterList"
+
+  /v1/clusters/{cluster_id}:
+    get:
+      operationId: getCluster
+      summary: Get cluster
+      description: Get cluster details.
+      tags: [clusters]
+      parameters:
+        - name: cluster_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cluster"
+
+  # Logs
+  /v1/logs:
+    get:
+      operationId: getLogs
+      summary: Get logs
+      description: Retrieve logs with optional filtering.
+      tags: [logs]
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Log search query
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Maximum number of log entries
+        - name: page_token
+          in: query
+          schema:
+            type: string
+          description: Pagination token
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogList"
+
+  /v1/logs/workflowruns/{workflow_run_id}/actions/{action_name}/tasks/{workflow_task_id}:
+    get:
+      operationId: getWorkflowRunTaskLogs
+      summary: Get workflow run task logs
+      description: Get log upload URL for a specific workflow task.
+      tags: [logs]
+      parameters:
+        - name: workflow_run_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: action_name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: workflow_task_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogUploadUrl"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Gretel API key or JWT token. Create a persistent API key from the Gretel console
+        at https://console.gretel.cloud.
+
+  schemas:
+    # Projects
+    Project:
+      type: object
+      properties:
+        uid:
+          type: string
+          description: Unique project identifier
+        name:
+          type: string
+          description: Project name (URL-safe slug)
+        display_name:
+          type: string
+          description: Human-readable project name
+        description:
+          type: string
+          description: Project description
+        runner_mode:
+          type: string
+          description: Default runner mode
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        owner:
+          type: string
+          description: Project owner user ID
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/Member"
+
+    ProjectList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+
+    CreateProjectRequest:
+      type: object
+      required:
+        - display_name
+      properties:
+        display_name:
+          type: string
+          description: Display name for the project
+        name:
+          type: string
+          description: URL-safe project name
+        description:
+          type: string
+          description: Project description
+        runner_mode:
+          type: string
+          enum: [cloud, hybrid, manual]
+          description: Default runner mode
+
+    UpdateProjectRequest:
+      type: object
+      properties:
+        display_name:
+          type: string
+        description:
+          type: string
+        runner_mode:
+          type: string
+
+    # Artifacts
+    Artifact:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Artifact key
+        filename:
+          type: string
+          description: Artifact filename
+        upload_url:
+          type: string
+          description: Pre-signed upload URL
+        created_at:
+          type: string
+          format: date-time
+
+    ArtifactList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Artifact"
+
+    CreateArtifactRequest:
+      type: object
+      required:
+        - filename
+      properties:
+        filename:
+          type: string
+          description: Name of the file to upload
+
+    ArtifactDownload:
+      type: object
+      properties:
+        url:
+          type: string
+          description: Pre-signed download URL
+        key:
+          type: string
+          description: Artifact key
+
+    # Models
+    Model:
+      type: object
+      properties:
+        uid:
+          type: string
+          description: Model unique identifier
+        name:
+          type: string
+          description: Model name
+        model_type:
+          type: string
+          description: Type of model (e.g., ctgan, lstm, transform)
+        status:
+          type: string
+          enum: [created, pending, active, completed, error, cancelled, lost]
+          description: Current model status
+        project_id:
+          type: string
+          description: Parent project ID
+        config:
+          type: object
+          additionalProperties: true
+          description: Model configuration
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        error_msg:
+          type: string
+          description: Error message if status is error
+        runner_mode:
+          type: string
+          description: Runner mode used for training
+
+    ModelList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Model"
+
+    CreateModelRequest:
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Configuration schema version
+          default: "1.0"
+        name:
+          type: string
+          description: Model name
+        models:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: >
+            Array of model configurations. Each defines a model type and its parameters.
+            Supported types include ctgan, lstm, amplify, transform, classify, and more.
+
+    UpdateModelRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          description: New model status
+        name:
+          type: string
+          description: New model name
+
+    # Record Handlers
+    RecordHandler:
+      type: object
+      properties:
+        uid:
+          type: string
+          description: Record handler unique identifier
+        model_id:
+          type: string
+          description: Parent model ID
+        status:
+          type: string
+          enum: [created, pending, active, completed, error, cancelled, lost]
+          description: Current handler status
+        params:
+          type: object
+          additionalProperties: true
+          description: Handler parameters
+        data_source:
+          type: string
+          description: Source data reference
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        error_msg:
+          type: string
+          description: Error message if status is error
+        artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Artifact"
+
+    RecordHandlerList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecordHandler"
+
+    CreateRecordHandlerRequest:
+      type: object
+      properties:
+        data_source:
+          type: string
+          description: Reference to the data source artifact
+        params:
+          type: object
+          additionalProperties: true
+          description: >
+            Parameters for record generation. For synthetic data, set num_records.
+            For transforms, specify transform-specific params.
+
+    UpdateRecordHandlerRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          description: New handler status (e.g., cancelled)
+
+    # Members and Invites
+    Member:
+      type: object
+      properties:
+        uid:
+          type: string
+        user_id:
+          type: string
+        email:
+          type: string
+        level:
+          type: integer
+          description: Permission level
+
+    MemberList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Member"
+
+    Invite:
+      type: object
+      properties:
+        uid:
+          type: string
+        email:
+          type: string
+        level:
+          type: integer
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    InviteList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Invite"
+
+    CreateInviteRequest:
+      type: object
+      required:
+        - email
+        - level
+      properties:
+        email:
+          type: string
+          description: Email address of the user to invite
+        level:
+          type: integer
+          description: Permission level (1=viewer, 2=member, 3=admin)
+
+    # Workflows
+    Workflow:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Workflow unique identifier
+        name:
+          type: string
+          description: Workflow name
+        project_id:
+          type: string
+          description: Parent project ID
+        config:
+          type: object
+          additionalProperties: true
+          description: Workflow configuration
+        runner_mode:
+          type: string
+          description: Runner mode
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    WorkflowList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Workflow"
+
+    CreateWorkflowRequest:
+      type: object
+      required:
+        - project_id
+        - name
+      properties:
+        project_id:
+          type: string
+          description: Project ID to create workflow in
+        name:
+          type: string
+          description: Workflow name
+        config:
+          type: object
+          additionalProperties: true
+          description: Workflow configuration
+        config_text:
+          type: string
+          description: Workflow configuration as text
+        runner_mode:
+          type: string
+          enum: [RUNNER_MODE_CLOUD, RUNNER_MODE_HYBRID, RUNNER_MODE_MANUAL]
+          description: Runner mode for workflow execution
+
+    ValidateWorkflowConfigRequest:
+      type: object
+      properties:
+        config:
+          type: object
+          additionalProperties: true
+          description: Workflow configuration to validate
+        runner_mode:
+          type: string
+          description: Runner mode to validate against
+
+    WorkflowRun:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Workflow run unique identifier
+        workflow_id:
+          type: string
+          description: Parent workflow ID
+        status:
+          type: string
+          enum: [created, pending, active, completed, error, cancelled, lost]
+          description: Current run status
+        config:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        error_msg:
+          type: string
+
+    WorkflowRunList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkflowRun"
+
+    CreateWorkflowRunRequest:
+      type: object
+      required:
+        - workflow_id
+      properties:
+        workflow_id:
+          type: string
+          description: Workflow ID to run
+        config:
+          type: object
+          additionalProperties: true
+          description: Optional config overrides
+        config_text:
+          type: string
+          description: Optional config text overrides
+
+    WorkflowTask:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Task unique identifier
+        workflow_run_id:
+          type: string
+        action_name:
+          type: string
+        status:
+          type: string
+          enum: [created, pending, active, completed, error, cancelled, lost]
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        error_msg:
+          type: string
+        log_location:
+          type: string
+
+    WorkflowTaskList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkflowTask"
+
+    # Connections
+    Connection:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Connection unique identifier
+        project_id:
+          type: string
+        type:
+          type: string
+          description: Connection type
+        name:
+          type: string
+          description: Connection name
+        config:
+          type: object
+          additionalProperties: true
+          description: Connection configuration
+        credentials:
+          type: object
+          additionalProperties: true
+          description: Connection credentials (only when explicitly requested)
+        connection_target_type:
+          type: string
+        auth_strategy:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ConnectionList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Connection"
+
+    CreateConnectionRequest:
+      type: object
+      required:
+        - project_id
+        - type
+        - name
+      properties:
+        project_id:
+          type: string
+          description: Project ID
+        type:
+          type: string
+          description: Connection type
+        name:
+          type: string
+          description: Connection name
+        credentials:
+          type: object
+          additionalProperties: true
+        encrypted_credentials:
+          type: object
+          additionalProperties: true
+        config:
+          type: object
+          additionalProperties: true
+        connection_target_type:
+          type: string
+        auth_strategy:
+          type: string
+
+    UpdateConnectionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        credentials:
+          type: object
+          additionalProperties: true
+        encrypted_credentials:
+          type: object
+          additionalProperties: true
+        config:
+          type: object
+          additionalProperties: true
+        connection_target_type:
+          type: string
+        auth_strategy:
+          type: string
+
+    # Users
+    User:
+      type: object
+      properties:
+        uid:
+          type: string
+          description: User unique identifier
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        username:
+          type: string
+        avatar_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        service_limits:
+          type: object
+          additionalProperties: true
+          description: Current usage limits and quotas
+
+    UserList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+        username:
+          type: string
+
+    SearchUsersRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          description: Search text
+
+    ApiKeyResponse:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The generated API key
+
+    # Billing
+    BillingData:
+      type: object
+      properties:
+        plan:
+          type: string
+          description: Current plan name
+        subscription:
+          $ref: "#/components/schemas/Subscription"
+        payment_methods:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        usage:
+          type: object
+          additionalProperties: true
+
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+        product_id:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    CreateSubscriptionRequest:
+      type: object
+      required:
+        - product_id
+      properties:
+        product_id:
+          type: string
+          description: Product ID for the subscription plan
+
+    # Teams
+    Team:
+      type: object
+      properties:
+        domain_guid:
+          type: string
+        name:
+          type: string
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+
+    TeamInviteRequest:
+      type: object
+      required:
+        - domain_guid
+        - user_email
+      properties:
+        domain_guid:
+          type: string
+          description: Team domain GUID
+        user_email:
+          type: string
+          description: Email of the user to invite or remove
+
+    # Activity
+    ActivityEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        action:
+          type: string
+        actor:
+          type: string
+        resource_type:
+          type: string
+        resource_id:
+          type: string
+        project_id:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+
+    ActivityList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityEntry"
+        total:
+          type: integer
+
+    # Clusters
+    Cluster:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Cluster unique identifier
+        name:
+          type: string
+        status:
+          type: string
+        owner_id:
+          type: string
+        cloud_provider:
+          type: string
+        region:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    ClusterList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Cluster"
+
+    # Logs
+    LogEntry:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        message:
+          type: string
+        level:
+          type: string
+        source:
+          type: string
+
+    LogList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/LogEntry"
+        next_page_token:
+          type: string
+          description: Token for next page of results
+
+    LogUploadUrl:
+      type: object
+      properties:
+        url:
+          type: string
+          description: Pre-signed URL for uploading logs
+
+    # Common
+    DeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the deletion was successful
+        message:
+          type: string
+          description: Status message
+
+    ValidationResult:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          description: Whether the validation passed
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of validation errors
+        warnings:
+          type: array
+          items:
+            type: string
+          description: List of validation warnings
