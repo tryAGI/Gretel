@@ -211,7 +211,6 @@ namespace Gretel
             string? authStrategy = default,
             global::System.Threading.CancellationToken cancellationToken = default)
         {
-
             var __request = new global::Gretel.CreateConnectionRequest
             {
                 ProjectId = projectId,

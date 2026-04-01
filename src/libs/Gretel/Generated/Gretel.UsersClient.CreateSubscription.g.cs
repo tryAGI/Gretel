@@ -193,7 +193,6 @@ namespace Gretel
             string productId,
             global::System.Threading.CancellationToken cancellationToken = default)
         {
-
             var __request = new global::Gretel.CreateSubscriptionRequest
             {
                 ProductId = productId,

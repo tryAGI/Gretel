@@ -217,7 +217,6 @@ namespace Gretel
             string? status = default,
             global::System.Threading.CancellationToken cancellationToken = default)
         {
-
             var __request = new global::Gretel.UpdateRecordHandlerRequest
             {
                 Status = status,

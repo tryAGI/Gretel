@@ -230,7 +230,6 @@ namespace Gretel
             global::System.Collections.Generic.IList<object>? models = default,
             global::System.Threading.CancellationToken cancellationToken = default)
         {
-
             var __request = new global::Gretel.CreateModelRequest
             {
                 SchemaVersion = schemaVersion,
