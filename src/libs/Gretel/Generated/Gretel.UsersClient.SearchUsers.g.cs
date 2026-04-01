@@ -193,6 +193,7 @@ namespace Gretel
             string text,
             global::System.Threading.CancellationToken cancellationToken = default)
         {
+
             var __request = new global::Gretel.SearchUsersRequest
             {
                 Text = text,
