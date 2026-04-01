@@ -205,7 +205,6 @@ namespace Gretel
             int level,
             global::System.Threading.CancellationToken cancellationToken = default)
         {
-
             var __request = new global::Gretel.CreateInviteRequest
             {
                 Email = email,
