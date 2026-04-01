@@ -197,6 +197,7 @@ namespace Gretel
             string userEmail,
             global::System.Threading.CancellationToken cancellationToken = default)
         {
+
             var __request = new global::Gretel.TeamInviteRequest
             {
                 DomainGuid = domainGuid,
