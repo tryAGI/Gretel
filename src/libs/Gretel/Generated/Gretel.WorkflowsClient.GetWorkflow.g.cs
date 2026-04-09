@@ -5,6 +5,25 @@ namespace Gretel
 {
     public partial class WorkflowsClient
     {
+
+
+        private static readonly global::Gretel.EndPointSecurityRequirement s_GetWorkflowSecurityRequirement0 =
+            new global::Gretel.EndPointSecurityRequirement
+            {
+                Authorizations = new global::Gretel.EndPointAuthorizationRequirement[]
+                {                    new global::Gretel.EndPointAuthorizationRequirement
+                    {
+                        Type = "Http",
+                        Location = "Header",
+                        Name = "Bearer",
+                        FriendlyName = "Bearer",
+                    },
+                },
+            };
+        private static readonly global::Gretel.EndPointSecurityRequirement[] s_GetWorkflowSecurityRequirements =
+            new global::Gretel.EndPointSecurityRequirement[]
+            {                s_GetWorkflowSecurityRequirement0,
+            };
         partial void PrepareGetWorkflowArguments(
             global::System.Net.Http.HttpClient httpClient,
             ref string workflowId);
@@ -38,9 +57,15 @@ namespace Gretel
                 httpClient: HttpClient,
                 workflowId: ref workflowId);
 
+
+            var __authorizations = global::Gretel.EndPointSecurityResolver.ResolveAuthorizations(
+                availableAuthorizations: Authorizations,
+                securityRequirements: s_GetWorkflowSecurityRequirements,
+                operationName: "GetWorkflowAsync");
+
             var __pathBuilder = new global::Gretel.PathBuilder(
                 path: $"/v1/workflows/{workflowId}",
-                baseUri: HttpClient.BaseAddress); 
+                baseUri: HttpClient.BaseAddress);
             var __path = __pathBuilder.ToString();
             using var __httpRequest = new global::System.Net.Http.HttpRequestMessage(
                 method: global::System.Net.Http.HttpMethod.Get,
@@ -50,7 +75,7 @@ namespace Gretel
             __httpRequest.VersionPolicy = global::System.Net.Http.HttpVersionPolicy.RequestVersionOrHigher;
 #endif
 
-            foreach (var __authorization in Authorizations)
+            foreach (var __authorization in __authorizations)
             {
                 if (__authorization.Type == "Http" ||
                     __authorization.Type == "OAuth2")

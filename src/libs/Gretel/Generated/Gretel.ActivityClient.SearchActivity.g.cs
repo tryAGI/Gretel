@@ -5,6 +5,25 @@ namespace Gretel
 {
     public partial class ActivityClient
     {
+
+
+        private static readonly global::Gretel.EndPointSecurityRequirement s_SearchActivitySecurityRequirement0 =
+            new global::Gretel.EndPointSecurityRequirement
+            {
+                Authorizations = new global::Gretel.EndPointAuthorizationRequirement[]
+                {                    new global::Gretel.EndPointAuthorizationRequirement
+                    {
+                        Type = "Http",
+                        Location = "Header",
+                        Name = "Bearer",
+                        FriendlyName = "Bearer",
+                    },
+                },
+            };
+        private static readonly global::Gretel.EndPointSecurityRequirement[] s_SearchActivitySecurityRequirements =
+            new global::Gretel.EndPointSecurityRequirement[]
+            {                s_SearchActivitySecurityRequirement0,
+            };
         partial void PrepareSearchActivityArguments(
             global::System.Net.Http.HttpClient httpClient,
             ref string? query,
@@ -53,6 +72,12 @@ namespace Gretel
                 limit: ref limit,
                 skip: ref skip);
 
+
+            var __authorizations = global::Gretel.EndPointSecurityResolver.ResolveAuthorizations(
+                availableAuthorizations: Authorizations,
+                securityRequirements: s_SearchActivitySecurityRequirements,
+                operationName: "SearchActivityAsync");
+
             var __pathBuilder = new global::Gretel.PathBuilder(
                 path: "/v1/activity",
                 baseUri: HttpClient.BaseAddress); 
@@ -61,7 +86,7 @@ namespace Gretel
                 .AddOptionalParameter("sort", sort)
                 .AddOptionalParameter("limit", limit?.ToString())
                 .AddOptionalParameter("skip", skip?.ToString()) 
-                ; 
+                ;
             var __path = __pathBuilder.ToString();
             using var __httpRequest = new global::System.Net.Http.HttpRequestMessage(
                 method: global::System.Net.Http.HttpMethod.Get,
@@ -71,7 +96,7 @@ namespace Gretel
             __httpRequest.VersionPolicy = global::System.Net.Http.HttpVersionPolicy.RequestVersionOrHigher;
 #endif
 
-            foreach (var __authorization in Authorizations)
+            foreach (var __authorization in __authorizations)
             {
                 if (__authorization.Type == "Http" ||
                     __authorization.Type == "OAuth2")

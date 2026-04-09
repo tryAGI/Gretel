@@ -41,37 +41,37 @@ namespace Gretel
 
 
         /// <summary>
-        /// Activity logs and search
+        /// Activity logs and search.
         /// </summary>
         public ActivityClient Activity { get; }
 
         /// <summary>
-        /// Compute cluster management
+        /// Compute cluster management.
         /// </summary>
         public ClustersClient Clusters { get; }
 
         /// <summary>
-        /// Manage data source and destination connections
+        /// Manage data source and destination connections.
         /// </summary>
         public ConnectionsClient Connections { get; }
 
         /// <summary>
-        /// Log retrieval
+        /// Log retrieval.
         /// </summary>
         public LogsClient Logs { get; }
 
         /// <summary>
-        /// Manage projects, artifacts, models, and record handlers
+        /// Manage projects, artifacts, models, and record handlers.
         /// </summary>
         public ProjectsClient Projects { get; }
 
         /// <summary>
-        /// User management, billing, teams, and invites
+        /// User management, billing, teams, and invites.
         /// </summary>
         public UsersClient Users { get; }
 
         /// <summary>
-        /// Create and manage data generation workflows
+        /// Create and manage data generation workflows.
         /// </summary>
         public WorkflowsClient Workflows { get; }
 
