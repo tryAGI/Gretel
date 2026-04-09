@@ -5,6 +5,25 @@ namespace Gretel
 {
     public partial class ClustersClient
     {
+
+
+        private static readonly global::Gretel.EndPointSecurityRequirement s_GetClusterSecurityRequirement0 =
+            new global::Gretel.EndPointSecurityRequirement
+            {
+                Authorizations = new global::Gretel.EndPointAuthorizationRequirement[]
+                {                    new global::Gretel.EndPointAuthorizationRequirement
+                    {
+                        Type = "Http",
+                        Location = "Header",
+                        Name = "Bearer",
+                        FriendlyName = "Bearer",
+                    },
+                },
+            };
+        private static readonly global::Gretel.EndPointSecurityRequirement[] s_GetClusterSecurityRequirements =
+            new global::Gretel.EndPointSecurityRequirement[]
+            {                s_GetClusterSecurityRequirement0,
+            };
         partial void PrepareGetClusterArguments(
             global::System.Net.Http.HttpClient httpClient,
             ref string clusterId);
@@ -38,9 +57,15 @@ namespace Gretel
                 httpClient: HttpClient,
                 clusterId: ref clusterId);
 
+
+            var __authorizations = global::Gretel.EndPointSecurityResolver.ResolveAuthorizations(
+                availableAuthorizations: Authorizations,
+                securityRequirements: s_GetClusterSecurityRequirements,
+                operationName: "GetClusterAsync");
+
             var __pathBuilder = new global::Gretel.PathBuilder(
                 path: $"/v1/clusters/{clusterId}",
-                baseUri: HttpClient.BaseAddress); 
+                baseUri: HttpClient.BaseAddress);
             var __path = __pathBuilder.ToString();
             using var __httpRequest = new global::System.Net.Http.HttpRequestMessage(
                 method: global::System.Net.Http.HttpMethod.Get,
@@ -50,7 +75,7 @@ namespace Gretel
             __httpRequest.VersionPolicy = global::System.Net.Http.HttpVersionPolicy.RequestVersionOrHigher;
 #endif
 
-            foreach (var __authorization in Authorizations)
+            foreach (var __authorization in __authorizations)
             {
                 if (__authorization.Type == "Http" ||
                     __authorization.Type == "OAuth2")

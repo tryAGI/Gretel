@@ -5,6 +5,25 @@ namespace Gretel
 {
     public partial class UsersClient
     {
+
+
+        private static readonly global::Gretel.EndPointSecurityRequirement s_RevokeApiKeySecurityRequirement0 =
+            new global::Gretel.EndPointSecurityRequirement
+            {
+                Authorizations = new global::Gretel.EndPointAuthorizationRequirement[]
+                {                    new global::Gretel.EndPointAuthorizationRequirement
+                    {
+                        Type = "Http",
+                        Location = "Header",
+                        Name = "Bearer",
+                        FriendlyName = "Bearer",
+                    },
+                },
+            };
+        private static readonly global::Gretel.EndPointSecurityRequirement[] s_RevokeApiKeySecurityRequirements =
+            new global::Gretel.EndPointSecurityRequirement[]
+            {                s_RevokeApiKeySecurityRequirement0,
+            };
         partial void PrepareRevokeApiKeyArguments(
             global::System.Net.Http.HttpClient httpClient);
         partial void PrepareRevokeApiKeyRequest(
@@ -33,9 +52,15 @@ namespace Gretel
             PrepareRevokeApiKeyArguments(
                 httpClient: HttpClient);
 
+
+            var __authorizations = global::Gretel.EndPointSecurityResolver.ResolveAuthorizations(
+                availableAuthorizations: Authorizations,
+                securityRequirements: s_RevokeApiKeySecurityRequirements,
+                operationName: "RevokeApiKeyAsync");
+
             var __pathBuilder = new global::Gretel.PathBuilder(
                 path: "/users/me/key",
-                baseUri: HttpClient.BaseAddress); 
+                baseUri: HttpClient.BaseAddress);
             var __path = __pathBuilder.ToString();
             using var __httpRequest = new global::System.Net.Http.HttpRequestMessage(
                 method: global::System.Net.Http.HttpMethod.Delete,
@@ -45,7 +70,7 @@ namespace Gretel
             __httpRequest.VersionPolicy = global::System.Net.Http.HttpVersionPolicy.RequestVersionOrHigher;
 #endif
 
-            foreach (var __authorization in Authorizations)
+            foreach (var __authorization in __authorizations)
             {
                 if (__authorization.Type == "Http" ||
                     __authorization.Type == "OAuth2")

@@ -5,6 +5,25 @@ namespace Gretel
 {
     public partial class WorkflowsClient
     {
+
+
+        private static readonly global::Gretel.EndPointSecurityRequirement s_CancelWorkflowRunSecurityRequirement0 =
+            new global::Gretel.EndPointSecurityRequirement
+            {
+                Authorizations = new global::Gretel.EndPointAuthorizationRequirement[]
+                {                    new global::Gretel.EndPointAuthorizationRequirement
+                    {
+                        Type = "Http",
+                        Location = "Header",
+                        Name = "Bearer",
+                        FriendlyName = "Bearer",
+                    },
+                },
+            };
+        private static readonly global::Gretel.EndPointSecurityRequirement[] s_CancelWorkflowRunSecurityRequirements =
+            new global::Gretel.EndPointSecurityRequirement[]
+            {                s_CancelWorkflowRunSecurityRequirement0,
+            };
         partial void PrepareCancelWorkflowRunArguments(
             global::System.Net.Http.HttpClient httpClient,
             ref string workflowRunId);
@@ -38,9 +57,15 @@ namespace Gretel
                 httpClient: HttpClient,
                 workflowRunId: ref workflowRunId);
 
+
+            var __authorizations = global::Gretel.EndPointSecurityResolver.ResolveAuthorizations(
+                availableAuthorizations: Authorizations,
+                securityRequirements: s_CancelWorkflowRunSecurityRequirements,
+                operationName: "CancelWorkflowRunAsync");
+
             var __pathBuilder = new global::Gretel.PathBuilder(
                 path: $"/v1/workflows/runs/{workflowRunId}/cancel",
-                baseUri: HttpClient.BaseAddress); 
+                baseUri: HttpClient.BaseAddress);
             var __path = __pathBuilder.ToString();
             using var __httpRequest = new global::System.Net.Http.HttpRequestMessage(
                 method: new global::System.Net.Http.HttpMethod("PATCH"),
@@ -50,7 +75,7 @@ namespace Gretel
             __httpRequest.VersionPolicy = global::System.Net.Http.HttpVersionPolicy.RequestVersionOrHigher;
 #endif
 
-            foreach (var __authorization in Authorizations)
+            foreach (var __authorization in __authorizations)
             {
                 if (__authorization.Type == "Http" ||
                     __authorization.Type == "OAuth2")

@@ -13,7 +13,7 @@ namespace Gretel
         /// <summary>
         /// Gretel API
         /// </summary>
-        public const string DefaultBaseUrl = "https://api.gretel.ai";
+        public const string DefaultBaseUrl = "https://api.gretel.ai/";
 
         private bool _disposeHttpClient = true;
 
@@ -38,7 +38,7 @@ namespace Gretel
 
 
         /// <summary>
-        /// Activity logs and search
+        /// Activity logs and search.
         /// </summary>
         public ActivityClient Activity => new ActivityClient(HttpClient, authorizations: Authorizations)
         {
@@ -47,7 +47,7 @@ namespace Gretel
         };
 
         /// <summary>
-        /// Compute cluster management
+        /// Compute cluster management.
         /// </summary>
         public ClustersClient Clusters => new ClustersClient(HttpClient, authorizations: Authorizations)
         {
@@ -56,7 +56,7 @@ namespace Gretel
         };
 
         /// <summary>
-        /// Manage data source and destination connections
+        /// Manage data source and destination connections.
         /// </summary>
         public ConnectionsClient Connections => new ConnectionsClient(HttpClient, authorizations: Authorizations)
         {
@@ -65,7 +65,7 @@ namespace Gretel
         };
 
         /// <summary>
-        /// Log retrieval
+        /// Log retrieval.
         /// </summary>
         public LogsClient Logs => new LogsClient(HttpClient, authorizations: Authorizations)
         {
@@ -74,7 +74,7 @@ namespace Gretel
         };
 
         /// <summary>
-        /// Manage projects, artifacts, models, and record handlers
+        /// Manage projects, artifacts, models, and record handlers.
         /// </summary>
         public ProjectsClient Projects => new ProjectsClient(HttpClient, authorizations: Authorizations)
         {
@@ -83,7 +83,7 @@ namespace Gretel
         };
 
         /// <summary>
-        /// User management, billing, teams, and invites
+        /// User management, billing, teams, and invites.
         /// </summary>
         public UsersClient Users => new UsersClient(HttpClient, authorizations: Authorizations)
         {
@@ -92,7 +92,7 @@ namespace Gretel
         };
 
         /// <summary>
-        /// Create and manage data generation workflows
+        /// Create and manage data generation workflows.
         /// </summary>
         public WorkflowsClient Workflows => new WorkflowsClient(HttpClient, authorizations: Authorizations)
         {
