@@ -12,6 +12,7 @@ namespace Gretel
         /// <param name="modelId"></param>
         /// <param name="handlerId"></param>
         /// <param name="type"></param>
+        /// <param name="requestOptions">Per-request overrides such as headers, query parameters, timeout, retries, and response buffering.</param>
         /// <param name="cancellationToken">The token to cancel the operation with</param>
         /// <exception cref="global::Gretel.ApiException"></exception>
         global::System.Threading.Tasks.Task<global::Gretel.ArtifactDownload> GetRecordHandlerArtifactAsync(
@@ -19,6 +20,7 @@ namespace Gretel
             string modelId,
             string handlerId,
             global::Gretel.GetRecordHandlerArtifactType? type = default,
+            global::Gretel.AutoSDKRequestOptions? requestOptions = default,
             global::System.Threading.CancellationToken cancellationToken = default);
     }
 }

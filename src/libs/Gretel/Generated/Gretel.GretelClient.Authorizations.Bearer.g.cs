@@ -25,6 +25,7 @@ namespace Gretel
             Authorizations.Add(new global::Gretel.EndPointAuthorization
             {
                 Type = "Http",
+                SchemeId = "HttpBearer",
                 Location = "Header",
                 Name = "Bearer",
                 Value = apiKey,
