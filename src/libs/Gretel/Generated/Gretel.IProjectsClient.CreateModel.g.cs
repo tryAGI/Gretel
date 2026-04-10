@@ -12,6 +12,7 @@ namespace Gretel
         /// <param name="runnerMode"></param>
         /// <param name="dryRun"></param>
         /// <param name="request"></param>
+        /// <param name="requestOptions">Per-request overrides such as headers, query parameters, timeout, retries, and response buffering.</param>
         /// <param name="cancellationToken">The token to cancel the operation with</param>
         /// <exception cref="global::Gretel.ApiException"></exception>
         global::System.Threading.Tasks.Task<global::Gretel.Model> CreateModelAsync(
@@ -20,6 +21,7 @@ namespace Gretel
             global::Gretel.CreateModelRequest request,
             global::Gretel.CreateModelRunnerMode? runnerMode = default,
             global::Gretel.CreateModelDryRun? dryRun = default,
+            global::Gretel.AutoSDKRequestOptions? requestOptions = default,
             global::System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// Create model<br/>
@@ -38,6 +40,7 @@ namespace Gretel
         /// <param name="models">
         /// Array of model configurations. Each defines a model type and its parameters. Supported types include ctgan, lstm, amplify, transform, classify, and more.
         /// </param>
+        /// <param name="requestOptions">Per-request overrides such as headers, query parameters, timeout, retries, and response buffering.</param>
         /// <param name="cancellationToken">The token to cancel the operation with</param>
         /// <exception cref="global::System.InvalidOperationException"></exception>
         global::System.Threading.Tasks.Task<global::Gretel.Model> CreateModelAsync(
@@ -47,6 +50,7 @@ namespace Gretel
             string? schemaVersion = default,
             string? name = default,
             global::System.Collections.Generic.IList<object>? models = default,
+            global::Gretel.AutoSDKRequestOptions? requestOptions = default,
             global::System.Threading.CancellationToken cancellationToken = default);
     }
 }

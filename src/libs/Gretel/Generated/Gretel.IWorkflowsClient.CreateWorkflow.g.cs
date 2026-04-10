@@ -9,11 +9,13 @@ namespace Gretel
         /// Create a new workflow for automated data generation.
         /// </summary>
         /// <param name="request"></param>
+        /// <param name="requestOptions">Per-request overrides such as headers, query parameters, timeout, retries, and response buffering.</param>
         /// <param name="cancellationToken">The token to cancel the operation with</param>
         /// <exception cref="global::Gretel.ApiException"></exception>
         global::System.Threading.Tasks.Task<global::Gretel.Workflow> CreateWorkflowAsync(
 
             global::Gretel.CreateWorkflowRequest request,
+            global::Gretel.AutoSDKRequestOptions? requestOptions = default,
             global::System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// Create workflow<br/>
@@ -34,6 +36,7 @@ namespace Gretel
         /// <param name="runnerMode">
         /// Runner mode for workflow execution
         /// </param>
+        /// <param name="requestOptions">Per-request overrides such as headers, query parameters, timeout, retries, and response buffering.</param>
         /// <param name="cancellationToken">The token to cancel the operation with</param>
         /// <exception cref="global::System.InvalidOperationException"></exception>
         global::System.Threading.Tasks.Task<global::Gretel.Workflow> CreateWorkflowAsync(
@@ -42,6 +45,7 @@ namespace Gretel
             object? config = default,
             string? configText = default,
             global::Gretel.CreateWorkflowRequestRunnerMode? runnerMode = default,
+            global::Gretel.AutoSDKRequestOptions? requestOptions = default,
             global::System.Threading.CancellationToken cancellationToken = default);
     }
 }
