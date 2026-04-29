@@ -125,7 +125,7 @@ namespace Gretel
                 PrepareGetConnectionRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    connectionId: connectionId);
+                    connectionId: connectionId!);
 
                 return __httpRequest;
             }

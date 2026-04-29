@@ -144,8 +144,8 @@ namespace Gretel
                 PrepareListRecordHandlersRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    projectId: projectId,
-                    modelId: modelId,
+                    projectId: projectId!,
+                    modelId: modelId!,
                     status: status,
                     sortBy: sortBy);
 

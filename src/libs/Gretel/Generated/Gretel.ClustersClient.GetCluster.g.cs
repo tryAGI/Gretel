@@ -125,7 +125,7 @@ namespace Gretel
                 PrepareGetClusterRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    clusterId: clusterId);
+                    clusterId: clusterId!);
 
                 return __httpRequest;
             }

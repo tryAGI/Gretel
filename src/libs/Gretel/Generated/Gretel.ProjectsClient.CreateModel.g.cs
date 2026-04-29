@@ -153,7 +153,7 @@ namespace Gretel
                 PrepareCreateModelRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    projectId: projectId,
+                    projectId: projectId!,
                     runnerMode: runnerMode,
                     dryRun: dryRun,
                     request: request);

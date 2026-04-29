@@ -133,7 +133,7 @@ namespace Gretel
                 PrepareDeleteProjectRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    projectId: projectId,
+                    projectId: projectId!,
                     dryRun: dryRun);
 
                 return __httpRequest;

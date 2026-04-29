@@ -143,9 +143,9 @@ namespace Gretel
                 PrepareGetRecordHandlerArtifactRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    projectId: projectId,
-                    modelId: modelId,
-                    handlerId: handlerId,
+                    projectId: projectId!,
+                    modelId: modelId!,
+                    handlerId: handlerId!,
                     type: type);
 
                 return __httpRequest;

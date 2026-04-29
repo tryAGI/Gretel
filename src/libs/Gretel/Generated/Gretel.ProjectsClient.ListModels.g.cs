@@ -145,7 +145,7 @@ namespace Gretel
                 PrepareListModelsRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    projectId: projectId,
+                    projectId: projectId!,
                     limit: limit,
                     modelType: modelType,
                     sortBy: sortBy);

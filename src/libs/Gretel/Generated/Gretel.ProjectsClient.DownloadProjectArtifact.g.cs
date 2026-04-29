@@ -133,7 +133,7 @@ namespace Gretel
                 PrepareDownloadProjectArtifactRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    projectId: projectId,
+                    projectId: projectId!,
                     key: key);
 
                 return __httpRequest;

@@ -125,7 +125,7 @@ namespace Gretel
                 PrepareAcceptInviteRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    inviteId: inviteId);
+                    inviteId: inviteId!);
 
                 return __httpRequest;
             }

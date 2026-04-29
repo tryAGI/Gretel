@@ -135,9 +135,9 @@ namespace Gretel
                 PrepareDeleteRecordHandlerRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    projectId: projectId,
-                    modelId: modelId,
-                    handlerId: handlerId);
+                    projectId: projectId!,
+                    modelId: modelId!,
+                    handlerId: handlerId!);
 
                 return __httpRequest;
             }

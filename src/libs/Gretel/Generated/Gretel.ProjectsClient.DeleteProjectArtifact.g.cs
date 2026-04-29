@@ -133,8 +133,8 @@ namespace Gretel
                 PrepareDeleteProjectArtifactRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    projectId: projectId,
-                    key: key);
+                    projectId: projectId!,
+                    key: key!);
 
                 return __httpRequest;
             }
