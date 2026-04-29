@@ -125,7 +125,7 @@ namespace Gretel
                 PrepareGetWorkflowRunRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    workflowRunId: workflowRunId);
+                    workflowRunId: workflowRunId!);
 
                 return __httpRequest;
             }

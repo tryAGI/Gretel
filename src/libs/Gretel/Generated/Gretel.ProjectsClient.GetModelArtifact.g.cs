@@ -138,8 +138,8 @@ namespace Gretel
                 PrepareGetModelArtifactRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    projectId: projectId,
-                    modelId: modelId,
+                    projectId: projectId!,
+                    modelId: modelId!,
                     type: type);
 
                 return __httpRequest;

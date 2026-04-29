@@ -135,9 +135,9 @@ namespace Gretel
                 PrepareGetWorkflowRunTaskLogsRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    workflowRunId: workflowRunId,
-                    actionName: actionName,
-                    workflowTaskId: workflowTaskId);
+                    workflowRunId: workflowRunId!,
+                    actionName: actionName!,
+                    workflowTaskId: workflowTaskId!);
 
                 return __httpRequest;
             }

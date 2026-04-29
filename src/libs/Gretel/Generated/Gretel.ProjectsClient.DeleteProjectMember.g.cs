@@ -130,8 +130,8 @@ namespace Gretel
                 PrepareDeleteProjectMemberRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    projectId: projectId,
-                    membershipId: membershipId);
+                    projectId: projectId!,
+                    membershipId: membershipId!);
 
                 return __httpRequest;
             }

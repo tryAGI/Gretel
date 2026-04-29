@@ -139,7 +139,7 @@ namespace Gretel
                 PrepareUpdateConnectionRequest(
                     httpClient: HttpClient,
                     httpRequestMessage: __httpRequest,
-                    connectionId: connectionId,
+                    connectionId: connectionId!,
                     request: request);
 
                 return __httpRequest;
