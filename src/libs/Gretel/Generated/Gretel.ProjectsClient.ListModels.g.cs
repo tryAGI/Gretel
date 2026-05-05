@@ -66,6 +66,36 @@ namespace Gretel
             global::Gretel.AutoSDKRequestOptions? requestOptions = default,
             global::System.Threading.CancellationToken cancellationToken = default)
         {
+            var __response = await ListModelsAsResponseAsync(
+                projectId: projectId,
+                limit: limit,
+                modelType: modelType,
+                sortBy: sortBy,
+                requestOptions: requestOptions,
+                cancellationToken: cancellationToken
+            ).ConfigureAwait(false);
+
+            return __response.Body;
+        }
+        /// <summary>
+        /// List models<br/>
+        /// List all models in a project.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="limit"></param>
+        /// <param name="modelType"></param>
+        /// <param name="sortBy"></param>
+        /// <param name="requestOptions">Per-request overrides such as headers, query parameters, timeout, retries, and response buffering.</param>
+        /// <param name="cancellationToken">The token to cancel the operation with</param>
+        /// <exception cref="global::Gretel.ApiException"></exception>
+        public async global::System.Threading.Tasks.Task<global::Gretel.AutoSDKHttpResponse<global::Gretel.ModelList>> ListModelsAsResponseAsync(
+            string projectId,
+            int? limit = default,
+            string? modelType = default,
+            global::Gretel.ListModelsSortBy? sortBy = default,
+            global::Gretel.AutoSDKRequestOptions? requestOptions = default,
+            global::System.Threading.CancellationToken cancellationToken = default)
+        {
             PrepareArguments(
                 client: HttpClient);
             PrepareListModelsArguments(
@@ -97,13 +127,14 @@ namespace Gretel
 
             global::System.Net.Http.HttpRequestMessage __CreateHttpRequest()
             {
+
                             var __pathBuilder = new global::Gretel.PathBuilder(
                                 path: $"/projects/{projectId}/models",
-                                baseUri: HttpClient.BaseAddress); 
+                                baseUri: HttpClient.BaseAddress);
                             __pathBuilder
                                 .AddOptionalParameter("limit", limit?.ToString())
                                 .AddOptionalParameter("model_type", modelType)
-                                .AddOptionalParameter("sort_by", sortBy?.ToValueString()) 
+                                .AddOptionalParameter("sort_by", sortBy?.ToValueString())
                                 ;
                             var __path = __pathBuilder.ToString();
                 __path = global::Gretel.AutoSDKRequestOptionsSupport.AppendQueryParameters(
@@ -178,6 +209,8 @@ namespace Gretel
                                 attempt: __attempt,
                                 maxAttempts: __maxAttempts,
                                 willRetry: false,
+                                retryDelay: null,
+                                retryReason: global::System.String.Empty,
                                 cancellationToken: __effectiveCancellationToken)).ConfigureAwait(false);
                     try
                     {
@@ -188,6 +221,11 @@ namespace Gretel
                     }
                     catch (global::System.Net.Http.HttpRequestException __exception)
                     {
+                        var __retryDelay = global::Gretel.AutoSDKRequestOptionsSupport.GetRetryDelay(
+                            clientOptions: Options,
+                            requestOptions: requestOptions,
+                            response: null,
+                            attempt: __attempt);
                         var __willRetry = __attempt < __maxAttempts && !__effectiveCancellationToken.IsCancellationRequested;
                         await global::Gretel.AutoSDKRequestOptionsSupport.OnAfterErrorAsync(
                             clientOptions: Options,
@@ -205,6 +243,8 @@ namespace Gretel
                                 attempt: __attempt,
                                 maxAttempts: __maxAttempts,
                                 willRetry: __willRetry,
+                                retryDelay: __willRetry ? __retryDelay : (global::System.TimeSpan?)null,
+                                retryReason: "exception",
                                 cancellationToken: __effectiveCancellationToken)).ConfigureAwait(false);
                         if (!__willRetry)
                         {
@@ -214,8 +254,7 @@ namespace Gretel
                         __httpRequest.Dispose();
                         __httpRequest = null;
                         await global::Gretel.AutoSDKRequestOptionsSupport.DelayBeforeRetryAsync(
-                            clientOptions: Options,
-                            requestOptions: requestOptions,
+                            retryDelay: __retryDelay,
                             cancellationToken: __effectiveCancellationToken).ConfigureAwait(false);
                         continue;
                     }
@@ -224,6 +263,11 @@ namespace Gretel
                         __attempt < __maxAttempts &&
                         global::Gretel.AutoSDKRequestOptionsSupport.ShouldRetryStatusCode(__response.StatusCode))
                     {
+                        var __retryDelay = global::Gretel.AutoSDKRequestOptionsSupport.GetRetryDelay(
+                            clientOptions: Options,
+                            requestOptions: requestOptions,
+                            response: __response,
+                            attempt: __attempt);
                         await global::Gretel.AutoSDKRequestOptionsSupport.OnAfterErrorAsync(
                             clientOptions: Options,
                             context: global::Gretel.AutoSDKRequestOptionsSupport.CreateHookContext(
@@ -240,14 +284,15 @@ namespace Gretel
                                 attempt: __attempt,
                                 maxAttempts: __maxAttempts,
                                 willRetry: true,
+                                retryDelay: __retryDelay,
+                                retryReason: "status:" + ((int)__response.StatusCode).ToString(global::System.Globalization.CultureInfo.InvariantCulture),
                                 cancellationToken: __effectiveCancellationToken)).ConfigureAwait(false);
                         __response.Dispose();
                         __response = null;
                         __httpRequest.Dispose();
                         __httpRequest = null;
                         await global::Gretel.AutoSDKRequestOptionsSupport.DelayBeforeRetryAsync(
-                            clientOptions: Options,
-                            requestOptions: requestOptions,
+                            retryDelay: __retryDelay,
                             cancellationToken: __effectiveCancellationToken).ConfigureAwait(false);
                         continue;
                     }
@@ -287,6 +332,8 @@ namespace Gretel
                                 attempt: __attemptNumber,
                                 maxAttempts: __maxAttempts,
                                 willRetry: false,
+                                retryDelay: null,
+                                retryReason: global::System.String.Empty,
                                 cancellationToken: __effectiveCancellationToken)).ConfigureAwait(false);
                 }
                 else
@@ -307,6 +354,8 @@ namespace Gretel
                                 attempt: __attemptNumber,
                                 maxAttempts: __maxAttempts,
                                 willRetry: false,
+                                retryDelay: null,
+                                retryReason: global::System.String.Empty,
                                 cancellationToken: __effectiveCancellationToken)).ConfigureAwait(false);
                 }
 
@@ -331,9 +380,13 @@ namespace Gretel
                                 {
                                     __response.EnsureSuccessStatusCode();
 
-                                    return
-                                        global::Gretel.ModelList.FromJson(__content, JsonSerializerContext) ??
+                                    var __value = global::Gretel.ModelList.FromJson(__content, JsonSerializerContext) ??
                                         throw new global::System.InvalidOperationException($"Response deserialization failed for \"{__content}\" ");
+                                    return new global::Gretel.AutoSDKHttpResponse<global::Gretel.ModelList>(
+                                        statusCode: __response.StatusCode,
+                                        headers: global::Gretel.AutoSDKHttpResponse.CreateHeaders(__response),
+                                        requestUri: __response.RequestMessage?.RequestUri,
+                                        body: __value);
                                 }
                                 catch (global::System.Exception __ex)
                                 {
@@ -361,9 +414,13 @@ namespace Gretel
                 #endif
                                     ).ConfigureAwait(false);
 
-                                    return
-                                        await global::Gretel.ModelList.FromJsonStreamAsync(__content, JsonSerializerContext).ConfigureAwait(false) ??
+                                    var __value = await global::Gretel.ModelList.FromJsonStreamAsync(__content, JsonSerializerContext).ConfigureAwait(false) ??
                                         throw new global::System.InvalidOperationException("Response deserialization failed.");
+                                    return new global::Gretel.AutoSDKHttpResponse<global::Gretel.ModelList>(
+                                        statusCode: __response.StatusCode,
+                                        headers: global::Gretel.AutoSDKHttpResponse.CreateHeaders(__response),
+                                        requestUri: __response.RequestMessage?.RequestUri,
+                                        body: __value);
                                 }
                                 catch (global::System.Exception __ex)
                                 {
