@@ -30,6 +30,25 @@ namespace Gretel
         /// <param name="projectId"></param>
         /// <param name="modelId"></param>
         /// <param name="handlerId"></param>
+        /// <param name="request"></param>
+        /// <param name="requestOptions">Per-request overrides such as headers, query parameters, timeout, retries, and response buffering.</param>
+        /// <param name="cancellationToken">The token to cancel the operation with</param>
+        /// <exception cref="global::Gretel.ApiException"></exception>
+        global::System.Threading.Tasks.Task<global::Gretel.AutoSDKHttpResponse<global::Gretel.RecordHandler>> UpdateRecordHandlerAsResponseAsync(
+            string projectId,
+            string modelId,
+            string handlerId,
+
+            global::Gretel.UpdateRecordHandlerRequest request,
+            global::Gretel.AutoSDKRequestOptions? requestOptions = default,
+            global::System.Threading.CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Update record handler<br/>
+        /// Update record handler status (e.g., cancel).
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="modelId"></param>
+        /// <param name="handlerId"></param>
         /// <param name="status">
         /// New handler status (e.g., cancelled)
         /// </param>
