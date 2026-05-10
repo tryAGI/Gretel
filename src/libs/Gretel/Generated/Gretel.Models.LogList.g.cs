@@ -50,5 +50,6 @@ namespace Gretel
         public LogList()
         {
         }
+
     }
 }

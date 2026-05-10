@@ -111,5 +111,6 @@ namespace Gretel
         public CreateConnectionRequest()
         {
         }
+
     }
 }

@@ -63,5 +63,6 @@ namespace Gretel
         public ValidationResult()
         {
         }
+
     }
 }
