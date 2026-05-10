@@ -84,5 +84,6 @@ namespace Gretel
         public UpdateConnectionRequest()
         {
         }
+
     }
 }

@@ -54,5 +54,6 @@ namespace Gretel
         public CreateInviteRequest()
         {
         }
+
     }
 }
