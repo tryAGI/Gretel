@@ -27,6 +27,23 @@ namespace Gretel
         /// </summary>
         /// <param name="projectId"></param>
         /// <param name="modelId"></param>
+        /// <param name="request"></param>
+        /// <param name="requestOptions">Per-request overrides such as headers, query parameters, timeout, retries, and response buffering.</param>
+        /// <param name="cancellationToken">The token to cancel the operation with</param>
+        /// <exception cref="global::Gretel.ApiException"></exception>
+        global::System.Threading.Tasks.Task<global::Gretel.AutoSDKHttpResponse<global::Gretel.RecordHandler>> CreateRecordHandlerAsResponseAsync(
+            string projectId,
+            string modelId,
+
+            global::Gretel.CreateRecordHandlerRequest request,
+            global::Gretel.AutoSDKRequestOptions? requestOptions = default,
+            global::System.Threading.CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Create record handler<br/>
+        /// Create a record handler for a model to generate synthetic data records. This starts the data generation process.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="modelId"></param>
         /// <param name="dataSource">
         /// Reference to the data source artifact
         /// </param>

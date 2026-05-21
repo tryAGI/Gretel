@@ -22,5 +22,23 @@ namespace Gretel
             string? expand = default,
             global::Gretel.AutoSDKRequestOptions? requestOptions = default,
             global::System.Threading.CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Get record handler<br/>
+        /// Get record handler details including status and artifacts.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="modelId"></param>
+        /// <param name="handlerId"></param>
+        /// <param name="expand"></param>
+        /// <param name="requestOptions">Per-request overrides such as headers, query parameters, timeout, retries, and response buffering.</param>
+        /// <param name="cancellationToken">The token to cancel the operation with</param>
+        /// <exception cref="global::Gretel.ApiException"></exception>
+        global::System.Threading.Tasks.Task<global::Gretel.AutoSDKHttpResponse<global::Gretel.RecordHandler>> GetRecordHandlerAsResponseAsync(
+            string projectId,
+            string modelId,
+            string handlerId,
+            string? expand = default,
+            global::Gretel.AutoSDKRequestOptions? requestOptions = default,
+            global::System.Threading.CancellationToken cancellationToken = default);
     }
 }

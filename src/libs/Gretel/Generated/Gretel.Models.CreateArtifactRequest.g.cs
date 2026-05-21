@@ -42,5 +42,6 @@ namespace Gretel
         public CreateArtifactRequest()
         {
         }
+
     }
 }

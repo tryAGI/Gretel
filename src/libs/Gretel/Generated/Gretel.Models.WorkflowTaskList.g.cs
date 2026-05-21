@@ -39,5 +39,6 @@ namespace Gretel
         public WorkflowTaskList()
         {
         }
+
     }
 }
