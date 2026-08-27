@@ -4,16 +4,16 @@
 namespace Gretel
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum ListRecordHandlersSortBy
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Asc,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Desc,
     }

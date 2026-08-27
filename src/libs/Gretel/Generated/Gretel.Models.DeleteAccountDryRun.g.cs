@@ -4,16 +4,16 @@
 namespace Gretel
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum DeleteAccountDryRun
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         No,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Yes,
     }

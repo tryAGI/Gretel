@@ -20,7 +20,7 @@ namespace Gretel.JsonConverters
                     {
                         return global::Gretel.WorkflowRunStatusExtensions.ToEnum(stringValue);
                     }
-                    
+
                     break;
                 }
                 case global::System.Text.Json.JsonTokenType.Number:

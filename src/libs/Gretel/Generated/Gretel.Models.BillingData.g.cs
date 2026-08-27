@@ -4,7 +4,7 @@
 namespace Gretel
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public sealed partial class BillingData
     {
@@ -15,19 +15,19 @@ namespace Gretel
         public string? Plan { get; set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         [global::System.Text.Json.Serialization.JsonPropertyName("subscription")]
         public global::Gretel.Subscription? Subscription { get; set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         [global::System.Text.Json.Serialization.JsonPropertyName("payment_methods")]
         public global::System.Collections.Generic.IList<object>? PaymentMethods { get; set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         [global::System.Text.Json.Serialization.JsonPropertyName("usage")]
         public object? Usage { get; set; }

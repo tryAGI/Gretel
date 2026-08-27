@@ -4,28 +4,28 @@
 namespace Gretel
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum GetModelArtifactType
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Data,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Logs,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Model,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Report,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         ReportJson,
     }
