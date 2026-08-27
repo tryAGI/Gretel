@@ -4,24 +4,24 @@
 namespace Gretel
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum GetRecordHandlerArtifactType
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Data,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Logs,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Report,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         ReportJson,
     }

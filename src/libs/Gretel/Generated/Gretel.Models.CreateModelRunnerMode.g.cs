@@ -4,20 +4,20 @@
 namespace Gretel
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum CreateModelRunnerMode
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Cloud,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Hybrid,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Manual,
     }

@@ -163,7 +163,7 @@ namespace Gretel
                          __authorization.Location == "Header")
                 {
                     __httpRequest.Headers.Add(__authorization.Name, __authorization.Value);
-                } 
+                }
             }
                 global::Gretel.AutoSDKRequestOptionsSupport.ApplyHeaders(
                     request: __httpRequest,

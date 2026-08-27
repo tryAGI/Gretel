@@ -9,15 +9,15 @@ namespace Gretel
     public enum CreateWorkflowRequestRunnerMode
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         RunnerModeCloud,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         RunnerModeHybrid,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         RunnerModeManual,
     }

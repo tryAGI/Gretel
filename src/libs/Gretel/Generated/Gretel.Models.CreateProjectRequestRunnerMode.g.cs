@@ -9,15 +9,15 @@ namespace Gretel
     public enum CreateProjectRequestRunnerMode
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Cloud,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Hybrid,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Manual,
     }
